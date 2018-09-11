@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.WebSockets;
+using System.Web.UI;
 
 namespace LearningWebSocket {
     public class Program {
@@ -30,6 +33,29 @@ namespace LearningWebSocket {
                 Byte[] bytes = new Byte[client.Available];
 
                 stream.Read(bytes, 0, bytes.Length); // Read the whole message
+
+                String data = Encoding.UTF8.GetString(bytes); // Translate bytes to string
+
+                if(new Regex("^GET").IsMatch(data)) {
+                    const string newLine = "\r\n"; // HTTP/1.1 defines the sequence CR LF as the end-of-line marker
+
+                    Byte[] response = Encoding.UTF8.GetBytes("HTTP/1.1 101 Switching Protocols" + newLine
+                        + "Connection: Upgrade" + newLine
+                        + "Upgrade: websocket" + newLine
+                        + "Sec-WebSocket-Accept: " + Convert.ToBase64String(
+                            System.Security.Cryptography.SHA1.Create().ComputeHash(
+                                Encoding.UTF8.GetBytes(
+                                    new Regex("Sec-WebSocket-Key: (.*)").Match(data).Groups[1].Value.Trim() + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+                                )
+                            )
+                        ) + newLine + newLine
+                    );
+
+                    stream.Write(response, 0, response.Length);
+                }
+                else {
+
+                }
             }
 
             //Socket serverSocket = new Socket(AddressFamily.Unspecified, SocketType.Stream, ProtocolType.IP); // hmm, what
