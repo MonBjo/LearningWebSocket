@@ -22,7 +22,17 @@ namespace LearningWebSocket {
 
             Console.WriteLine("A client connected.");
 
-            //Socket serverSocket = new Socket(AddressFamily.Unspecified, SocketType.Stream, ProtocolType.IP); // hmm, what.
+            NetworkStream stream = client.GetStream();
+
+            while(true) { // Endless loop to keep receiving changes in stream
+                while(!stream.DataAvailable);
+
+                Byte[] bytes = new Byte[client.Available];
+
+                stream.Read(bytes, 0, bytes.Length); // Read the whole message
+            }
+
+            //Socket serverSocket = new Socket(AddressFamily.Unspecified, SocketType.Stream, ProtocolType.IP); // hmm, what
         }
 
         public void Write(byte[] buffer, int offset, int size) {
@@ -34,3 +44,4 @@ namespace LearningWebSocket {
         }
     }
 }
+// Following a tutorial: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_server 
