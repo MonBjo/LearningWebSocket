@@ -30,9 +30,9 @@ namespace LearningWebSocket {
             while(true) { // Endless loop to keep receiving changes in stream
                 while(!stream.DataAvailable);
 
-                Byte[] bytes = new Byte[client.Available];
+                Byte[] bytes = new Byte[client.Available]; // Receves the message
 
-                stream.Read(bytes, 0, bytes.Length); // Read the whole message
+                stream.Read(bytes, 0, bytes.Length); // Read the whole message in bytes
 
                 String data = Encoding.UTF8.GetString(bytes); // Translate bytes to string
 
